@@ -153,8 +153,10 @@ def instances(request):
         except libvirtError as lib_err:
             error_messages.append(lib_err)
             addlogmsg(request.user.username, instance.name, lib_err.message)
-
-    return render(request, 'instances.html', locals())
+    if not request.user.is_superuser:
+        return render(request, 'instances_user.html', locals())
+    else:
+        return render(request, 'instances.html', locals())
 
 
 @login_required
