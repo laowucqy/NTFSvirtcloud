@@ -1,0 +1,9 @@
+2017-04-21 01:00:01,286 - perm_api.py - DEBUG - 生成res: []
+2017-04-21 01:00:01,287 - ansible_api.py - DEBUG - {'dark': {}, 'contacted': {}}
+2017-04-21 01:00:01,287 - asset_api.py - DEBUG - 获取硬件信息: {'dark': {}, 'contacted': {}}
+2017-04-21 09:33:54,649 - user_api.py - DEBUG - 生成ssh key， 并设置authorized_keys
+2017-04-21 12:03:03,087 - user_api.py - DEBUG - 生成ssh key， 并设置authorized_keys
+2017-04-21 12:04:06,220 - user_api.py - DEBUG - 生成ssh key， 并设置authorized_keys
+2017-04-21 05:22:55,332 - user_api.py - DEBUG - 生成ssh key， 并设置authorized_keys
+2017-04-21 05:34:06,732 - user_api.py - DEBUG - 生成ssh key， 并设置authorized_keys
+2017-04-24 02:49:10,834 - user_api.py - DEBUG - 生成ssh key， 并设置authorized_keys
