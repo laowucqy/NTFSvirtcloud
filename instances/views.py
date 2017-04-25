@@ -418,6 +418,7 @@ def instance(request, compute_id, vname):
         vcpu = conn.get_vcpu()
         cur_vcpu = conn.get_cur_vcpu()
         uuid = conn.get_uuid()
+        print uuid
         memory = conn.get_memory()
         cur_memory = conn.get_cur_memory()
         title = conn.get_title()

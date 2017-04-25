@@ -4,6 +4,9 @@ from django.db.models import Q
 from wuser.user_api import *
 from models import Flavor
 from forms import FlavorForm
+from server.models import Compute
+from vrtManager.hostdetails import wvmHostDetails
+from vrtManager.connection import CONN_SSH, CONN_TCP, CONN_TLS, CONN_SOCKET, connection_manager
 # Create your views here.
 
 # @require_role('super')
@@ -62,6 +65,28 @@ def flavor_list(request):
     """
     header_title, path1, path2 = u'规格列表', u'虚拟资源管理', u'规格列表'
     posts = Flavor.objects.all()
+    compute = Compute.objects.all()
+
+    def get_hosts_status(computes):
+        """
+        Function return all hosts all vds on host
+        """
+        compute_data = []
+        for compute in computes:
+            compute_data.append({'id': compute.id,
+                                 'name': compute.name,
+                                 'hostname': compute.hostname,
+                                 'status': connection_manager.host_is_up(compute.type, compute.hostname),
+                                 'type': compute.type,
+                                 'login': compute.login,
+                                 'password': compute.password,
+                                 'details': compute.details
+                                 })
+            print connection_manager.host_is_up(compute.type, compute.hostname)
+        return compute_data
+    computes = Compute.objects.filter().order_by('name')
+    compute_info = get_hosts_status(computes)
+
     keyword = request.GET.get('keyword', '')
     if keyword:
         posts = Flavor.objects.filter(Q(label__contains=keyword) )

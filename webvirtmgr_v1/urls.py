@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from instances.views import instances
 from console.views import console as console_vnc
-from create.views import create_instance
+from create.views import create_instance,create_from_flavor
 urlpatterns = patterns('webvirtmgr_v1.views',
                        # Examples:
                        url(r'^$', 'index', name='index'),
@@ -9,6 +9,8 @@ urlpatterns = patterns('webvirtmgr_v1.views',
                        url(r'^instances/$', instances, name='instances'),
                        url(r'^compute/(?P<compute_id>[0-9]+)/(?P<create_type>[0-9]+)/create/$',
                            create_instance, name='create_instance'),
+                       url(r'^compute/(?P<compute_id>[0-9]+)/(?P<flavor>[0-9]+)/create_from_flavor/$',
+                           create_from_flavor, name='create_from_flavor'),
                        url(r'^skin_config/$', 'skin_config', name='skin_config'),
                        url(r'^login/$', 'Login', name='login'),
                        url(r'^logout/$', 'Logout', name='logout'),
