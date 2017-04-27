@@ -102,43 +102,43 @@
                                     <li role="presentation" class="active">
                                         <a href="#power" class="action-button" aria-controls="power" role="tab" data-toggle="tab">
                                             <span id="action-block" class="glyphicon glyphicon-off" aria-hidden="true"></span>
-                                            {% trans "Power" %}
+                                            电源
                                         </a>
                                     </li>
                                     <li role="presentation">
                                         <a href="#access" class="action-button" aria-controls="access" role="tab" data-toggle="tab">
                                             <span id="action-block" class="glyphicon glyphicon-lock" aria-hidden="true"></span>
-                                            {% trans "Access" %}
+                                            控制台
                                         </a>
                                     </li>
                                     <li role="presentation">
                                         <a href="#resize" class="action-button" aria-controls="resize" role="tab" data-toggle="tab">
                                             <span id="action-block" class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
-                                            {% trans "Resize" %}
+                                            修改规格
                                         </a>
                                     </li>
                                     <li role="presentation">
                                         <a href="#snapshots" class="action-button" aria-controls="snapshots" role="tab" data-toggle="tab">
                                             <span id="action-block" class="glyphicon glyphicon-camera" aria-hidden="true"></span>
-                                            {% trans "Snapshots" %}
+                                            快照
                                         </a>
                                     </li>
                                     <li role="presentation">
                                         <a href="#settings" class="action-button" aria-controls="settings" role="tab" data-toggle="tab">
                                             <span id="action-block" class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                                            {% trans "Settings" %}
+                                            设置
                                         </a>
                                     </li>
-                                    <li role="presentation">
-                                        <a href="#graphics" id="chartgraphs" class="action-button" aria-controls="graphics" role="tab" data-toggle="tab">
-                                            <span id="action-block" class="glyphicon glyphicon-signal" aria-hidden="true"></span>
-                                            {% trans "Graphs" %}
-                                        </a>
-                                    </li>
+{#                                    <li role="presentation">#}
+{#                                        <a href="#graphics" id="chartgraphs" class="action-button" aria-controls="graphics" role="tab" data-toggle="tab">#}
+{#                                            <span id="action-block" class="glyphicon glyphicon-signal" aria-hidden="true"></span>#}
+{#                                            {% trans "Graphs" %}#}
+{#                                        </a>#}
+{#                                    </li>#}
                                     <li role="presentation">
                                         <a href="#undefine" class="action-button" aria-controls="undefine" role="tab" data-toggle="tab">
                                             <span id="action-block" class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                                            {% trans "Destroy" %}
+                                            销毁
                                         </a>
                                     </li>
                                 </ul>
@@ -151,23 +151,23 @@
                                                 {% ifequal status 1 %}
                                                     <li role="presentation" class="active">
                                                         <a href="#poweroff" aria-controls="poweroff" role="tab" data-toggle="tab">
-                                                            {% trans "Power Off" %}
+                                                            关机
                                                         </a>
                                                     </li>
                                                     <li role="presentation">
                                                         <a href="#powercycle" aria-controls="powercycle" role="tab" data-toggle="tab">
-                                                            {% trans "Power Cycle" %}
+                                                            重启
                                                         </a>
                                                     </li>
                                                     <li role="presentation">
                                                         <a href="#powerforce" aria-controls="powerforce" role="tab" data-toggle="tab">
-                                                            {% trans "Force Off" %}
+                                                            强制关机
                                                         </a>
                                                     </li>
                                                     {% if request.user.is_superuser %}
                                                         <li role="presentation">
                                                             <a href="#suspend" aria-controls="suspend" role="tab" data-toggle="tab">
-                                                                {% trans "Suspend" %}
+                                                                挂起
                                                             </a>
                                                         </li>
                                                     {% endif %}
@@ -176,13 +176,13 @@
                                                     {% if request.user.role == 'SU' %}
                                                         <li role="presentation" class="active">
                                                             <a href="#resume" aria-controls="resume" role="tab" data-toggle="tab">
-                                                                {% trans "Resume" %}
+                                                                恢复
                                                             </a>
                                                         </li>
                                                     {% else %}
                                                         <li role="presentation" class="active">
                                                             <a href="#resume" aria-controls="resume" role="tab" data-toggle="tab">
-                                                                {% trans "Resume" %}
+                                                                恢复
                                                             </a>
                                                         </li>
                                                     {% endif %}
@@ -190,7 +190,7 @@
                                                 {% ifequal status 5 %}
                                                     <li role="presentation" class="active">
                                                         <a href="#boot" aria-controls="boot" role="tab" data-toggle="tab">
-                                                            {% trans "Power On" %}
+                                                            开机
                                                         </a>
                                                     </li>
                                                 {% endifequal %}

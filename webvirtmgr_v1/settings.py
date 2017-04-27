@@ -115,8 +115,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'webvirtmgr_v1',
+        'USER':'root',
+        'PASSWORD':'hitnslab',
+        'HOST':'',
+        'PORT':'',
     }
 }
 TEMPLATE_DIRS = (
@@ -167,7 +171,7 @@ WS_HOST = '0.0.0.0'
 
 # Websock public port
 WS_PUBLIC_HOST = None
-
+WS_CERT = None
 LIBVIRT_KEEPALIVE_INTERVAL = 5
 LIBVIRT_KEEPALIVE_COUNT = 5
 

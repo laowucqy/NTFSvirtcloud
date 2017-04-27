@@ -445,7 +445,8 @@ def instance(request, compute_id, vname):
         clone_disks = show_clone_disk(disks, vname)
         console_passwd = conn.get_console_passwd()
         clone_free_names = get_clone_free_names()
-        user_quota_msg = check_user_quota(0, 0, 0, 0)
+        if not request.user.role == 'SU':
+            user_quota_msg = check_user_quota(0, 0, 0, 0)
 
         try:
             instance = Instance.objects.get(compute_id=compute_id, name=vname)

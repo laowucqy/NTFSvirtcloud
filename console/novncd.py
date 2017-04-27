@@ -7,7 +7,7 @@ import django
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 ROOT_PATH = os.path.abspath(os.path.join(DIR_PATH, '..', ''))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "webvirtcloud.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "webvirtmgr_v1.settings")
 CERT = DIR_PATH + '/cert.pem'
 
 if ROOT_PATH not in sys.path:
@@ -22,7 +22,7 @@ django.setup()
 import re
 import Cookie
 import socket
-from webvirtcloud.settings import WS_PORT, WS_HOST, WS_CERT
+from webvirtmgr_v1.settings import WS_PORT, WS_HOST, WS_CERT
 from vrtManager.connection import CONN_SSH, CONN_SOCKET
 from tunnel import Tunnel
 
