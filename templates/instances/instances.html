@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load mytags %}
 {% block content %}
     {% load bootstrap %}
     {% include 'nav_cat_bar.html' %}
     {% include 'error_block.html' %}
-    <div class="wrapper wrapper-content animated fadeInRight">
+    {% if request.session.role_id == 2 %}
+        <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
             <div class="col-sm-12">
                 <div class="ibox float-e-margins" id="all">
@@ -26,7 +28,7 @@
                     <div class="ibox-content">
                         <form id="asset_form">
                             <div class="col-sm-1" style="padding-left: 0">
-                                <a href="#AddInstance"  type=button class="btn btn-sm btn-primary " data-toggle="modal"> 添加虚拟机</a>
+                                <a href="#AddInstance"  type=button class="btn btn-sm btn-primary " data-toggle="modal"> 从模板创建</a>
 
                             </div>
                             <div class="col-sm-7" style="padding-left: 0px">
@@ -60,7 +62,7 @@
                                     {% for vm, info in inst.items %}
                                         <tr>
                                             <td class="text-center"><a href="{% url 'instance' host.0 vm %}">{{ vm }}</a><br><small><em>{{ info.title }}</em></small></td>
-                                            <td class="text-center"><a href="#">{{ host.1 }}</a><br><small><em>{% if info.userinstances.count > 0 %}{{ info.userinstances.first_user.user.username }}{% if info.userinstances.count > 1 %} (+{{ info.userinstances.count|add:"-1" }}){% endif %}{% endif %}</em></small></td>
+                                            <td class="text-center"><a href="{% url 'server_detail' %}?id={{ host.0 }}">{{ host.1 }}</a><br><small><em>{% if info.userinstances.count > 0 %}{{ info.userinstances.first_user.user.username }}{% if info.userinstances.count > 1 %} (+{{ info.userinstances.count|add:"-1" }}){% endif %}{% endif %}</em></small></td>
                                             <td class="text-center">{% ifequal info.status 1 %}
                                                 <span class="text-success">开启</span>
                                             {% endifequal %}
@@ -154,6 +156,129 @@
             </div>
         </div>
     </div>
+    {% endif %}
+    {% if request.session.role_id == 0 %}
+        <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins" id="all">
+                    <div class="ibox-title">
+                        <h5> 主机详细信息列表</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="ibox-content">
+                        <form id="asset_form">
+                            <div id="export"></div>
+                            <table class="table table-hover table-striped sortable-theme-bootstrap" data-sortable>
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Status</th>
+                                                <th>VCPU</th>
+                                                <th>Memory</th>
+                                                <th data-sortable="false" style="width: 165px;">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="searchable">
+                                            {% for inst, vm in all_user_vms.items %}
+                                                <tr>
+                                                    <td><a href="{% url 'instance' vm.compute_id vm.name %}">{{ vm.name }}</a><br><small><em>{{ vm.title }}</em></small></td>
+                                                    <td>{% ifequal vm.status 1 %}
+                                                            <span class="text-success">{% trans "Active" %}</span>
+                                                        {% endifequal %}
+                                                        {% ifequal vm.status 5 %}
+                                                            <span class="text-danger">{% trans "Off" %}</span>
+                                                        {% endifequal %}
+                                                        {% ifequal vm.status 3 %}
+                                                            <span class="text-warning">{% trans "Suspend" %}</span>
+                                                        {% endifequal %}
+                                                    </td>
+                                                    <td>{{ vm.vcpu }}</td>
+                                                    <td>{{ vm.memory }} {% trans "MB" %}</td>
+                                                    <td><form action="" method="post" role="form">{% csrf_token %}
+                                                            <input type="hidden" name="name" value="{{ vm.name }}"/>
+                                                            <input type="hidden" name="compute_id" value="{{ vm.compute_id }}"/>
+                                                            {% ifequal vm.status 5 %}
+                                                                {% if inst.instance.is_template %}
+                                                                    <button class="btn btn-sm btn-default" type="button" name="clone" title="{% trans "Clone" %}" onclick="goto_instance_clone({{ vm.compute_id }}, '{{ vm.name }}');">
+                                                                        <span class="glyphicon glyphicon-duplicate"></span>
+                                                                    </button>
+                                                                {% else %}
+                                                                    <button class="btn btn-sm btn-default" type="submit" name="poweron" title="{% trans "Power On" %}">
+                                                                        <span class="glyphicon glyphicon-play"></span>
+                                                                    </button>
+                                                                {% endif %}
+                                                                <button class="btn btn-sm btn-default disabled" title="{% trans "Power Off" %}">
+                                                                    <span class="glyphicon glyphicon-off"></span>
+                                                                </button>
+                                                                <button class="btn btn-sm btn-default disabled" title="{% trans "Power Cycle" %}">
+                                                                    <span class="glyphicon glyphicon-refresh"></span>
+                                                                </button>
+                                                                <button class="btn btn-sm btn-default disabled" title="{% trans "VNC Console" %}">
+                                                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                                                </button>
+                                                            {% endifequal %}
+                                                            {% ifequal vm.status 3 %}
+                                                                <button class="btn btn-sm btn-default disabled" title="{% trans "Power On" %}">
+                                                                    <span class="glyphicon glyphicon-play"></span>
+                                                                </button>
+                                                                <button class="btn btn-sm btn-default disabled" title="{% trans "Power Off" %}">
+                                                                    <span class="glyphicon glyphicon-off"></span>
+                                                                </button>
+                                                                <button class="btn btn-sm btn-default disabled" title="{% trans "Power Cycle" %}">
+                                                                    <span class="glyphicon glyphicon-refresh"></span>
+                                                                </button>
+                                                                <button class="btn btn-sm btn-default disabled" title="{% trans "VNC Console" %}">
+                                                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                                                </button>
+                                                            {% endifequal %}
+                                                            {% ifequal vm.status 1 %}
+                                                                <button class="btn btn-sm btn-default disabled" title="{% trans "Power On" %}">
+                                                                    <span class="glyphicon glyphicon-play"></span>
+                                                                </button>
+                                                                <button class="btn btn-sm btn-default" type="submit" name="poweroff" title="{% trans "Power Off" %}">
+                                                                    <span class="glyphicon glyphicon-off"></span>
+                                                                </button>
+                                                                <button class="btn btn-sm btn-default" type="submit" name="powercycle" title="{% trans "Power Cycle" %}" onclick="return confirm('Are you sure?')">
+                                                                    <span class="glyphicon glyphicon-refresh"></span>
+                                                                </button>
+                                                                <a href="#" class="btn btn-sm btn-default" onclick='open_console("{{ vm.compute_id }}-{{ vm.uuid }}")' title="{% trans "Console" %}">
+                                                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                                                </a>
+                                                            {% endifequal %}
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="dataTables_info" id="editable_info" role="status" aria-live="polite">
+                                        Showing {{ compute.start_index }} to {{ compute.end_index }} of {{ p.count }} entries
+                                    </div>
+                                </div>
+                                {% include 'paginator.html' %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Modal pool -->
     <div class="modal fade" id="AddInstance" tabindex="-1" role="dialog" aria-labelledby="AddNetPoolLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -175,14 +300,6 @@
                                     {% else %}
                                         <option value="None">None</option>
                                     {% endif %}
-                                </select>
-                            </div>
-                            <label class="col-sm-4 control-label">创建方式</label>
-                            <div class="col-sm-6">
-                                <select class="form-control" id="type_select">
-                                    <option value="1">通过flavor创建</option>
-                                    <option value="2">通过模板创建</option>
-                                    <option value="3">定制</option>
                                 </select>
                             </div>
                         </div>
@@ -323,8 +440,7 @@
         }
         function goto_compute() {
             var compute = $("#compute_select").val();
-            var type = $("#type_select").val();
-            window.location = "/compute/" + compute +"/"+ type + "/create/";
+            window.location = "/compute/" + compute +"/create_from_template/";
         }
     </script>
 

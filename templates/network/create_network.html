@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load mytags %}
+{% load i18n %}
+
+{% block content %}
+    {% include 'nav_cat_bar.html' %}
+    {% include 'error_block.html' %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-10">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>填写虚拟网络基本信息</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal" method="post" action="" role="form">{% csrf_token %}
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">{% trans "Name" %}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="name" placeholder="default" required
+                                   pattern="[a-zA-Z0-9_]+">
+                        </div>
+                    </div>
+                    <div class="form-group bridge_name_form_group_dhcp">
+                        <label class="col-sm-4 control-label">{% trans "Subnet pool" %}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="subnet" value="192.168.100.0/24" required
+                                   pattern="[0-9\/\.]+">
+                        </div>
+                    </div>
+                    <div class="form-group bridge_name_form_group_dhcp">
+                        <label class="col-sm-4 control-label">{% trans "DHCP" %}</label>
+
+                        <div class="col-sm-6">
+                            <input type="checkbox" name="dhcp" value="true" checked>
+                        </div>
+                    </div>
+                    <div class="form-group bridge_name_form_group_dhcp">
+                        <label class="col-sm-4 control-label">{% trans "Fixed Address" %}</label>
+
+                        <div class="col-sm-6">
+                            <input type="checkbox" name="fixed" value="true">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">{% trans "Type forwarding" %}</label>
+
+                        <div class="col-sm-6">
+                            <select id="forward_select" class="form-control" name="forward">
+                                <option value="nat">{% trans "NAT" %}</option>
+                                <option value="route">{% trans "ROUTE" %}</option>
+                                <option value="none">{% trans "ISOLATE" %}</option>
+                                <option value="bridge">{% trans "BRIDGE" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group bridge_name_form_group">
+                        <label class="col-sm-4 control-label">{% trans "Bridge Name" %}</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="bridge_name" placeholder="br0"
+                                   pattern="[a-z0-9\-_:]+">
+                        </div>
+                    </div>
+                    <div class="form-group bridge_name_form_group">
+                        <label class="col-sm-4 control-label">{% trans "Open vSwitch" %}</label>
+
+                        <div class="col-sm-6">
+                            <input type="checkbox" name="openvswitch" value="true">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" name="create">{% trans "Create" %}</button>
+                    </div>
+                </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block self_footer_js %}
+
+    <script>
+        $('#serverForm').validator({
+            timely: 2,
+            theme: "yellow_right_effect",
+            rules: {
+                check_hostname: [/[^a-zA-Z0-9._-]+$/i, '大小写字母数字和下划线小数点,2-20位,并且非root'],
+                check_username: [/[^a-zA-Z0-9._-]+$/, '大小写字母数字和下划线小数点'],
+                type_m: function(element){
+                    return  $("#M").is(":checked");
+                }
+            },
+            fields: {
+                "name": {
+                    rule: "required",
+                    tip: "输入服务器名称",
+                    ok: "",
+                    msg: {required: "必须填写!"}
+                },
+                "hostname": {
+                    rule: "required",
+                    tip: "服务器IP地址",
+                    ok: "",
+                    msg: {required: "必须填写"}
+                },
+                "login": {
+                    rule: "required",
+                    tip: "用户名（用于SSH链接）",
+                    ok: "",
+                    msg: {required: "必须填写"}
+                }
+            },
+            valid: function(form) {
+                form.submit();
+            }
+        });
+
+    </script>
+{% endblock %}

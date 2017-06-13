@@ -7,7 +7,7 @@ urlpatterns = patterns('',
                        url(r'^server/add/$', server_add, name='server_add'),
                        url(r'^server/del/$', server_del, name='server_del'),
                        url(r'^server/edit/$', server_edit, name='server_edit'),
-                       url(r'^server/detail/$', computes, name='server_detail'),
+                       url(r'^server/detail/$', overview, name='server_detail'),
 
                        # url(r'^asset/add/$', asset_add, name='asset_add'),
                        # url(r"^asset/add_batch/$", asset_add_batch, name='asset_add_batch'),

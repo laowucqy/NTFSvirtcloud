@@ -9,7 +9,7 @@ from django.db.models import Q
 from wuser.user_api import *
 from wuser.models import UserAttributes
 import re
-
+from django.conf import settings
 MAIL_FROM = EMAIL_HOST_USER
 
 
@@ -240,6 +240,7 @@ def user_list(request):
 
 @require_role(role='user')
 def user_detail(request):
+    error_messages = []
     header_title, path1, path2 = '用户详情', '用户管理', '用户详情'
     if request.session.get('role_id') == 0:
         user_id = request.user.id
@@ -249,6 +250,43 @@ def user_detail(request):
     user = get_object(User, id=user_id)
     if not user:
         return HttpResponseRedirect(reverse('user_list'))
+
+    user = User.objects.get(id=user_id)
+    user_insts = UserInstance.objects.filter(user_id=user_id)
+    instances = Instance.objects.all().order_by('name')
+
+    if request.method == 'POST':
+        if 'delete' in request.POST:
+            user_inst = request.POST.get('user_inst', '')
+            del_user_inst = UserInstance.objects.get(id=user_inst)
+            del_user_inst.delete()
+            return HttpResponseRedirect(request.get_full_path())
+        if 'permission' in request.POST:
+            user_inst = request.POST.get('user_inst', '')
+            inst_vnc = request.POST.get('inst_vnc', '')
+            inst_change = request.POST.get('inst_change', '')
+            inst_delete = request.POST.get('inst_delete', '')
+            edit_user_inst = UserInstance.objects.get(id=user_inst)
+            edit_user_inst.is_change = bool(inst_change)
+            edit_user_inst.is_delete = bool(inst_delete)
+            edit_user_inst.is_vnc = bool(inst_vnc)
+            edit_user_inst.save()
+            return HttpResponseRedirect(request.get_full_path())
+        if 'add' in request.POST:
+            inst_id = request.POST.get('inst_id', '')
+
+            if settings.ALLOW_INSTANCE_MULTIPLE_OWNER:
+                check_inst = UserInstance.objects.filter(instance_id=int(inst_id), user_id=int(user_id))
+            else:
+                check_inst = UserInstance.objects.filter(instance_id=int(inst_id))
+
+            if check_inst:
+                msg = ("Instance already added")
+                error_messages.append(msg)
+            else:
+                add_user_inst = UserInstance(instance_id=int(inst_id), user_id=int(user_id))
+                add_user_inst.save()
+                return HttpResponseRedirect(request.get_full_path())
 
     # user_perm_info = get_group_user_perm(user)
     # role_assets = user_perm_info.get('role')

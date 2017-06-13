@@ -18,7 +18,8 @@ from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from wuser.models import User, UserGroup
-
+from instances.models import Project, Instance
+from server.models import Compute
 from webvirtmgr_v1.models import Setting
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response

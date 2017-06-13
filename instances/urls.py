@@ -12,6 +12,8 @@ urlpatterns = [
         views.guess_mac_address, name='guess_mac_address'),
     url(r'^guess_clone_name/$',
         views.guess_clone_name, name='guess_clone_name'),
+    url(r'^instance_project/$',
+        views.instance_project, name='instance_project'),
     url(r'^check_instance/(?P<vname>[\w\-\.]+)/$',
         views.check_instance, name='check_instance'),
     url(r'^instances_admin/(?P<compute_id>[0-9]+)/$', views.instances_admin, name='instances_admin'),

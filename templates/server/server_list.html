@@ -49,13 +49,6 @@
                                 <tr>
                                     <th class="text-center"> 主机名 </th>
                                     <th class="text-center" name="ip"> IP地址 </th>
-                                    {#                                    <th class="text-center"> IDC </th>#}
-                                    {#                                    <th class="text-center"> 所属主机组 </th>#}
-                                    {#                                    <th class="text-center"> 配置信息 </th>#}
-                                    {#                                    <th class="text-center"> 操作系统 </th>#}
-                                    {#                                    <th class="text-center"> cpu核数 </th>#}
-                                    {#                                    <th class="text-center"> 内存 </th>#}
-                                    {#                                    <th class="text-center"> 硬盘 </th>#}
                                     <th class="text-center"> 链接状态 </th>
                                     <th class="text-center"> 操作 </th>
                                 </tr>
@@ -63,7 +56,7 @@
                                 <tbody>
                                 {% for compute in computes_info %}
                                     <tr class="gradeX">
-                                        <td class="text-center hostname"><a href="#">{{ compute.name }}</a></td>
+                                        <td class="text-center hostname"><a href="{% url 'server_detail' %}?id={{ compute.id }}">{{ compute.name }}</a></td>
                                         <td class="text-center"><a href="#">{{ compute.hostname }}</a></td>
                                         {% if compute.status == True %}
                                             <td class="text-center">"Connected"</td>

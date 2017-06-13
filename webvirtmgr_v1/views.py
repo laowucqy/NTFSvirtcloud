@@ -87,13 +87,16 @@ def index(request):
     # li_date, li_str = getDaysByNum(7)
     today = datetime.datetime.now().day
     from_week = datetime.datetime.now() - datetime.timedelta(days=7)
-
+    header_title, path1, path2 = u'虚拟机管理平台', u'总览', u'运行情况'
     if is_role_request(request, 'user'):
         return index_cu(request)
 
     elif is_role_request(request, 'super'):
         # dashboard 显示汇总
         users = User.objects.all()
+        vms = Instance.objects.all()
+        servers = Compute.objects.all()
+        projects = Project.objects.all()
         # hosts = Asset.objects.all()
         # online = Log.objects.filter(is_finished=0)
         # online_host = online.values('host').distinct()

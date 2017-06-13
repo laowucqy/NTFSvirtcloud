@@ -14,7 +14,7 @@ from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from server.models import Compute
-from instances.models import Instance
+from instances.models import Instance,Project
 from wuser.models import UserInstance, UserSSHKey
 from vrtManager.hostdetails import wvmHostDetails
 from vrtManager.instance import wvmInstance, wvmInstances
@@ -77,7 +77,7 @@ def instances(request):
                                  })
         return compute_data
 
-
+    pid = request.GET.get('pid', '')
     if request.user.role in ['CU', 'GA']:
         user_instances = UserInstance.objects.filter(user_id=request.user.id)
         for usr_inst in user_instances:
@@ -187,6 +187,99 @@ def instances(request):
     #     return render(request, 'instances.html', locals())
     return my_render('instances/instances.html', locals(), request)
 
+
+@login_required
+def instance_project(request):
+    header_title, path1, path2 = u'虚拟机列表', u'虚拟机管理', u'虚拟机列表'
+    error_messages = []
+    all_host_vms = {}
+    all_user_vms = {}
+    computes = Compute.objects.all()
+    pid = request.GET.get('pid', '')
+    if pid:
+        instance_project = Project.objects.filter(id=pid)
+        if instance_project:
+            instance_project = instance_project[0]
+            instance_list = instance_project.instance_set.all()
+            for usr_inst in instance_list:
+                if connection_manager.host_is_up(usr_inst.compute.type,
+                                                 usr_inst.compute.hostname):
+                    conn = wvmHostDetails(usr_inst.compute,
+                                          usr_inst.compute.login,
+                                          usr_inst.compute.password,
+                                          usr_inst.compute.type)
+
+                    all_user_vms[usr_inst] = conn.get_user_instances(usr_inst.name)
+                    all_user_vms[usr_inst].update({'compute_id': usr_inst.compute.id})
+        pprint(all_user_vms)
+    if request.method == 'POST':
+        name = request.POST.get('name', '')
+        compute_id = request.POST.get('compute_id', '')
+        instance = Instance.objects.get(compute_id=compute_id, name=name)
+        try:
+            conn = wvmInstances(instance.compute.hostname,
+                                instance.compute.login,
+                                instance.compute.password,
+                                instance.compute.type)
+            if 'poweron' in request.POST:
+                msg = _("Power On")
+                addlogmsg(request.user.username, instance.name, msg)
+                conn.start(name)
+                return HttpResponseRedirect(request.get_full_path())
+
+            if 'poweroff' in request.POST:
+                msg = _("Power Off")
+                addlogmsg(request.user.username, instance.name, msg)
+                conn.shutdown(name)
+                return HttpResponseRedirect(request.get_full_path())
+
+            if 'powercycle' in request.POST:
+                msg = _("Power Cycle")
+                conn.force_shutdown(name)
+                conn.start(name)
+                addlogmsg(request.user.username, instance.name, msg)
+                return HttpResponseRedirect(request.get_full_path())
+
+            if 'getvvfile' in request.POST:
+                msg = _("Send console.vv file")
+                addlogmsg(request.user.username, instance.name, msg)
+                response = HttpResponse(content='', content_type='application/x-virt-viewer', status=200, reason=None,
+                                        charset='utf-8')
+                response.writelines('[virt-viewer]\n')
+                response.writelines('type=' + conn.graphics_type(name) + '\n')
+                response.writelines('host=' + conn.graphics_listen(name) + '\n')
+                response.writelines('port=' + conn.graphics_port(name) + '\n')
+                response.writelines('title=' + conn.domain_name(name) + '\n')
+                response.writelines('password=' + conn.graphics_passwd(name) + '\n')
+                response.writelines('enable-usbredir=1\n')
+                response.writelines('disable-effects=all\n')
+                response.writelines('secure-attention=ctrl+alt+ins\n')
+                response.writelines('release-cursor=ctrl+alt\n')
+                response.writelines('fullscreen=1\n')
+                response.writelines('delete-this-file=1\n')
+                response['Content-Disposition'] = 'attachment; filename="console.vv"'
+                return response
+
+            if request.user.role == 'SU':
+
+                if 'suspend' in request.POST:
+                    msg = _("Suspend")
+                    addlogmsg(request.user.username, instance.name, msg)
+                    conn.suspend(name)
+                    return HttpResponseRedirect(request.get_full_path())
+
+                if 'resume' in request.POST:
+                    msg = _("Resume")
+                    addlogmsg(request.user.username, instance.name, msg)
+                    conn.resume(name)
+                    return HttpResponseRedirect(request.get_full_path())
+
+        except libvirtError as lib_err:
+            error_messages.append(lib_err)
+            addlogmsg(request.user.username, instance.name, lib_err.message)
+    return my_render('instances/instances_project.html', locals(), request)
+
+
 @login_required
 def instances_admin(request, compute_id):
 
@@ -231,7 +324,7 @@ def instances_admin(request, compute_id):
     if request.method == 'POST':
         name = request.POST.get('name', '')
         compute_id = request.POST.get('compute_id', '')
-        instance = Instance.objects.get(compute_id=compute_id, name=name)
+        instance = Instance.objects.filter(compute_id=compute_id, name=name)
         try:
             conn = wvmInstances(instance.compute.hostname,
                                 instance.compute.login,

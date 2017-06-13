@@ -84,6 +84,7 @@ INSTALLED_APPS = (
     'console',
     'create',
     'flavor',
+    'project',
 )
 
 MIDDLEWARE_CLASSES = (

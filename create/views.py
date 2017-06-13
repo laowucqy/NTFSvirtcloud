@@ -16,13 +16,13 @@ from wuser.user_api import *
 from pprint import pprint
 
 @require_role('super')
-def create_instance(request, compute_id,create_type):
+def create_from_template(request, compute_id):
     """
     :param request:
     :return:
     """
 
-    header_title, path1, path2 = u'通过flavor创建', u'虚拟资源管理', u'规格列表'
+    header_title, path1, path2 = u'通过template创建', u'创建虚拟机', u'通过模板创建'
     posts = Flavor.objects.all()
     keyword = request.GET.get('keyword', '')
     if keyword:
@@ -126,13 +126,7 @@ def create_instance(request, compute_id,create_type):
                                 error_messages.append(lib_err)
 
         conn.close()
-    if create_type == "1":
-        return render(request, 'create/create_instance_1.html', locals())
-    elif create_type == "2":
-        pass
-    elif create_type=="3":
-        pass
-    return render(request, 'create/create_instance_1.html', locals())
+    return render(request, 'create/create_from_template.html', locals())
 
 
 @require_role('super')

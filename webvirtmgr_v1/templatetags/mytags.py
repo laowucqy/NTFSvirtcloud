@@ -86,6 +86,16 @@ def members_count(group_id):
         return 0
 
 
+@register.filter(name='instances_count')
+def instances_count(project_id):
+    """统计项目下虚拟机数量"""
+    project = get_object(Project, id=project_id)
+    if project:
+        return project.instance_set.count()
+    else:
+        return 0
+
+
 @register.filter(name='to_name')
 def to_name(user_id):
     """user id 转位用户名称"""

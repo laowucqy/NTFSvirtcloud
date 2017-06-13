@@ -34,7 +34,7 @@ def computes(request):
                                  'password': compute.password,
                                  'details': compute.details
                                  })
-            print connection_manager.host_is_up(compute.type, compute.hostname)
+            #print connection_manager.host_is_up(compute.type, compute.hostname)
         return compute_data
 
     keyword = request.GET.get('keyword', '')
@@ -116,16 +116,14 @@ def server_edit(request):
         server_form = ServerForm(instance=edit_host)
         return my_render('server/server_edit.html', locals(), request)
 
-@login_required
-def overview(request, compute_id):
+@require_role('super')
+def overview(request):
     """
     :param request:
     :return:
     """
-
-    if not request.user.is_superuser:
-        return HttpResponseRedirect(reverse('index'))
-
+    header_title, path1, path2 = u'查看物理机', u'物理机详情', u'查看物理机'
+    compute_id = request.GET.get('id', '')
     error_messages = []
     compute = get_object_or_404(Compute, pk=compute_id)
 
@@ -141,7 +139,7 @@ def overview(request, compute_id):
     except libvirtError as lib_err:
         error_messages.append(lib_err)
 
-    return render(request, 'overview.html', locals())
+    return my_render('server/server_detail.html', locals(), request)
 
 
 @login_required

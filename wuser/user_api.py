@@ -3,7 +3,7 @@
 from Crypto.PublicKey import RSA
 from subprocess import call
 
-from wuser.models import AdminGroup
+from wuser.models import AdminGroup,UserInstance
 from webvirtmgr_v1.api import *
 from webvirtmgr_v1.settings import BASE_DIR, EMAIL_HOST_USER as MAIL_FROM
 
